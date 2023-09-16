@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import re
-from urllib.parse import urlencode, quote, quote_plus
+from urllib.parse import urlencode, quote
 from datetime import datetime
 import schedule
 import time
@@ -141,18 +141,21 @@ def publish(id):
     newHeaders['Referer'] = url
     newHeaders['Origin'] = 'https://ithelp.ithome.com.tw'
     session.headers.update(newHeaders)
-
+    subject = draftContent['subject']
     data = {'_token': draftContent['token'],
          'group': 'tech',
          '_method': 'PUT',
-         'subject': draftContent['subject'],
+         'subject': subject,
          'description': draftContent['description'],
         }
     # 將tags[]的值編碼
     encoded_data = urlencode(data)
-    tags =  '&'.join([f'tags%5B%5D={t}' for t in draftContent['tags']])
+    tags =  '&'.join([f'tags%5B%5D={quote(t)}' for t in draftContent['tags']])
     encoded_data  = encoded_data + '&' + tags
-    return scrape_website(url, 'POST', encoded_data)
+    scrape_website(url, 'POST', encoded_data)
+    message = f'已發布文章！ 文章名稱: {subject} ; id: {id}'
+    line_notifiy(message)
+    print(message)
 
 def showDraft(userId):
     draftList = getArticlesList(userId)
@@ -195,11 +198,7 @@ def postLast(userId):
     draftList = getArticlesList(userId)
     if len(draftList) > 0 :
         postId = draftList[0]['id']
-        postName = draftList[0]['text']
         publish(postId)
-        message = f'已發布文章！ 文章名稱: {postName} ; id: {postId}'
-        line_notifiy(message)
-        print(message)
         showDraft(userId)
     else: 
         message = '發文失敗，目前無草稿文章'
@@ -216,12 +215,13 @@ def chiosePost(userId):
             if postIndex == 'exit':
                 break
             elif int(postIndex) <= len(draftList):
-                publish(draftList[postIndex - 1])
+                publish(draftList[int(postIndex) - 1]['id'])
                 break
             else :
                 print('輸入無效，請重新選擇')
         except Exception as error:
-            print('輸入無效，請重新選擇')
+            print(error)
+            print('發生錯誤，請重新選擇')
 
 def autoPostFunction(open, time, userId):
     schedule.cancel_job(postLast)
