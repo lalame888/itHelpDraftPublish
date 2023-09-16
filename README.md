@@ -103,6 +103,13 @@ python3 itHelp.py
 
 看起來卡在選單中，但背景還是有在運作，就把終端視窗開著
 
+## Step5: IT邦幫忙儲存草稿
+這是最重要的一步，必須 **「照順序」** 將你要發布的草稿給儲存起來  
+![草稿列表](https://github.com/lalame888/itHelpDraftPublish/blob/master/%E8%8D%89%E7%A8%BF%E5%88%97%E8%A1%A8.png?raw=true)
+
+用程式讀起來就會變成這樣
+![讀取列表](https://github.com/lalame888/itHelpDraftPublish/blob/master/%E8%AE%80%E5%8F%96%E8%8D%89%E7%A8%BF%E5%88%97%E8%A1%A8.png?raw=true)
+會從最早的草稿開始，當時間到就自動發文
 
 
 ## 目前有幾個問題：
