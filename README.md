@@ -1,4 +1,3 @@
-![image](https://github.com/lalame888/itHelpDraftPublish/assets/43725404/94cd0bec-2d95-4650-a2c9-4534353e8a14)# itHelpDraftPublish
 IT邦幫忙鐵人賽發文神器  
 只要貼上登入token就可以檢視目前草稿的標題與數量  
 並且可開關自動發文功能，每天於設定時間（預設為10:00:00，可以更動)自動貼一篇貼文  
