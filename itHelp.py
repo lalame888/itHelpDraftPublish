@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import re
-from urllib.parse import urlencode, quote
+from urllib.parse import urlencode
 from datetime import datetime
 import schedule
 import time
@@ -12,6 +12,7 @@ config = ConfigParser()
 config.read('itHelpConfig.ini')
 cookie_value = config.get('Settings', 'cookie_value')
 lineToken = config.get('Settings', 'line_token')
+
 stop_event = threading.Event()
 
 # 建立session
@@ -49,7 +50,7 @@ def scrape_website(url, method = 'GET', data = {}, session = session):
         raise Exception(f'請求失敗，狀態碼：{response.status_code}, 錯誤訊息：{response.text}')
 
 #發送到line通知    
-def line_notifiy(message):
+def line_notify(message):
     try:
         url = 'https://notify-api.line.me/api/notify'
         data = { 'message': message }
@@ -60,8 +61,8 @@ def line_notifiy(message):
     except Exception as error:
         print(f'串接line失敗 : error')
 
-def no_longin_alter():
-    line_notifiy('目前登入Tonke過期，請重新設定Token')
+def no_login_alter():
+    line_notify('目前登入Tonke過期，請重新設定Token')
 
 
 # 取得使用者id
@@ -147,14 +148,13 @@ def publish(id):
          '_method': 'PUT',
          'subject': subject,
          'description': draftContent['description'],
+         'tags[]': draftContent['tags'],
         }
     # 將tags[]的值編碼
-    encoded_data = urlencode(data)
-    tags =  '&'.join([f'tags%5B%5D={quote(t)}' for t in draftContent['tags']])
-    encoded_data  = encoded_data + '&' + tags
+    encoded_data = urlencode(data, doseq=True)
     scrape_website(url, 'POST', encoded_data)
     message = f'已發布文章！ 文章名稱: {subject} ; id: {id}'
-    line_notifiy(message)
+    line_notify(message)
     print(message)
 
 def showDraft(userId):
@@ -202,10 +202,10 @@ def postLast(userId):
         showDraft(userId)
     else: 
         message = '發文失敗，目前無草稿文章'
-        line_notifiy(message)
+        line_notify(message)
         print(message) 
 
-def chiosePost(userId):
+def chosePost(userId):
     draftList = getArticlesList(userId)
     print('目前的草稿文章清單：')
     showList(draftList)
@@ -227,9 +227,9 @@ def autoPostFunction(open, time, userId):
     schedule.cancel_job(postLast)
     if open:
         schedule.every().day.at(time).do(postLast, userId)
-        line_notifiy(f'開啟自動發文，時間為{time}')
+        line_notify(f'開啟自動發文，時間為{time}')
     else:
-        line_notifiy(f'關閉自動發文功能')
+        line_notify(f'關閉自動發文功能')
 
 
 def run_schedule():
@@ -243,17 +243,17 @@ def main():
     autoPostTime = '10:00:00'
     schedule_thread = threading.Thread(target=run_schedule)
     schedule_thread.start()
-    line_notifiy(f'\n啟動IT邦幫忙自動發文神器\n自動發文設定為: {"開，設定時間為每日 " + autoPostTime if autoPost else "關"}')
+    line_notify(f'\n啟動IT邦幫忙自動發文神器\n自動發文設定為: {"開，設定時間為每日 " + autoPostTime if autoPost else "關"}')
     user = getUser()
     if user['isLogin']:
         userName = user['name']
-        line_notifiy(f'目前登入帳號為: {userName}')
+        line_notify(f'目前登入帳號為: {userName}')
     try:
         while True :
                 user = getUser()
                 userId = user['id']
                 userName = user['name']
-                schedule.cancel_job(no_longin_alter)
+                schedule.cancel_job(no_login_alter)
                 if user['isLogin']:
                     print(f'目前登入帳號: {userName}')
                     message = f'自動發文設定為: {"開，設定時間為每日 " + autoPostTime if autoPost else "關"}'
@@ -275,7 +275,7 @@ def main():
                     elif choice == "2":
                         postLast(userId)          
                     elif choice == "3":
-                        chiosePost(userId)
+                        chosePost(userId)
                     elif choice == '4':
                         autoPost = not autoPost
                         autoPostFunction(autoPost, autoPostTime, userId)
@@ -308,18 +308,18 @@ def main():
                         print("無效的選擇，請重新輸入。")
                     print('')
                 else:
-                    schedule.every(30).minutes.do(no_longin_alter)
+                    schedule.every(30).minutes.do(no_login_alter)
                     loginId = input("目前登入cookie無效，請重新輸入登入帳號: ")
                     ps = input("請輸入密碼:")
                     print('登入中...')
                     login(loginId, ps)
     except Exception as error:
-        line_notifiy(f'發生錯誤意外關閉: {error}')
+        line_notify(f'發生錯誤意外關閉: {error}')
         print(error)
         stop_event.set()
     stop_event.set()
     schedule_thread.join()
-    line_notifiy('關閉IT邦幫忙發文神器')
+    line_notify('關閉IT邦幫忙發文神器')
 
 
 main()
