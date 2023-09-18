@@ -36,7 +36,6 @@ def scrape_website(session, url, method = 'GET', data = {}):
 
 #發送到line通知    
 def line_notify(message):
-    return
     try:
         url = 'https://notify-api.line.me/api/notify'
         data = { 'message': message }
