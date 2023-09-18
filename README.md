@@ -13,9 +13,8 @@ IT邦幫忙鐵人賽發文神器
   查看請求(request)的標頭Header中的 Cookie  
   ![取得cookie](https://raw.githubusercontent.com/lalame888/itHelpDraftPublish/master/%E5%8F%96%E5%BE%97cookie.png)
   就是圖片中反白的那一大塊  
-  複製之後，把他貼到itHelpConfig.ini中  
-  ![貼上cookie](https://github.com/lalame888/itHelpDraftPublish/blob/master/%E8%B2%BC%E4%B8%8Acookie.png?raw=true)
-  (圖片中露出來的cookie是不同的登入帳號，所以內容長不一樣正常的，單純示範)  
+  複製之後，把他貼到itHelp.py的cookie_value中  
+
   
 ## Step2: 設定 line notify token (可跳過）
   如果希望程式起動與發佈貼文之後可以透過line傳送訊息給自己  
