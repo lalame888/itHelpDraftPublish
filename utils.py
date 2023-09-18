@@ -44,14 +44,13 @@ def line_notify(message):
         lineSession.headers.update(lineSession.headers)
         scrape_website(lineSession, url, 'POST', data)
     except Exception as error:
-        print(f'串接line失敗 : error')
+        print(f'串接line失敗 : {error}')
 
 
 # 取得使用者{id: string, name: string} | None 
 def getUser(session):
     url = 'https://ithelp.ithome.com.tw/'
     page_content = scrape_website(session, url)
-
     soup = BeautifulSoup(page_content, 'html.parser')
     account = soup.find('a', {'id': 'account'})
     if account :
@@ -176,7 +175,9 @@ def login(loginId, ps):
     if response.status_code == 200:
         # 處理回應內容
         if (response.cookies):
-            return requests.utils.dict_from_cookiejar(response.cookies)
+            cookie_dict = requests.utils.dict_from_cookiejar(response.cookies)
+            cookie_string = '; '.join([f'{key}={value}' for key, value in cookie_dict.items()])
+            return cookie_string
     else:
         raise Exception(f'請求失敗，狀態碼：{response.status_code}, 錯誤訊息：{response.text}')
 

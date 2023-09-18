@@ -4,7 +4,7 @@ import time
 import threading
 import utils as module
 
-cookie_value = '你的登入cookie'
+cookie_value = 'your cookie'
 stop_event = threading.Event()
 
 def is_valid_time(input_str):
@@ -82,17 +82,16 @@ def main():
     session = module.getSession(cookie_value)
     module.line_notify(f'\n啟動IT邦幫忙自動發文神器\n自動發文設定為: {"開，設定時間為每日 " + autoPostTime if autoPost else "關"}')
     user = module.getUser(session)
-    if user:
+    if user != None:
         userName = user['name']
         module.line_notify(f'目前登入帳號為: {userName}')
     try:
         while True :
             session = module.getSession(cookie_value)
             user = module.getUser(session)
-            userId = user['id']
-            userName = user['name']
             schedule.cancel_job(no_login_alter)
-            if user:
+            if user != None:
+                userName = user['name']
                 print(f'目前登入帳號: {userName}')
                 message = f'自動發文設定為: {"開，設定時間為每日 " + autoPostTime if autoPost else "關"}'
                 print(message)
@@ -152,9 +151,9 @@ def main():
                 print('登入中...')
                 cookie_value = module.login(loginId, ps)
     except Exception as error:
-        module.line_notify(f'發生錯誤意外關閉: {error}')
-        print(error)
-        stop_event.set()
+            module.line_notify(f'發生錯誤意外關閉: {error}')
+            print(error)
+            stop_event.set()
     stop_event.set()
     schedule_thread.join()
     module.line_notify('關閉IT邦幫忙發文神器')
