@@ -122,5 +122,10 @@ python3 itHelp.py
 提供開啟就直接發佈一篇最早建立的草稿  
 讓電腦的系統排程去做定時，python這邊的程式只負責發布草稿成正式文章
 一樣需要將cookie放入 publishOnePost.py 中的變數再做使用
+```
+  python3 publishOnePost.py
+```
+執行指令後就會發一篇積存的草稿文章
+
 
 
